@@ -1,0 +1,32 @@
+{
+  "name": "component-loader",
+  "description": "Component loader which handles dependency loading",
+  "version": "0.0.0",
+  "dependencies": {
+    "async": "^0.9.0"
+  },
+  "scripts": {
+    "lint": "./node_modules/.bin/jshint .",
+    "checkStyle": "./node_modules/.bin/jscs .",
+    "pretest": "npm run-script lint && npm run-script checkStyle",
+    "test": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha test -- -R spec ",
+    "posttest": "./node_modules/.bin/istanbul check-coverage && rm -rf coverage",
+    "prepublish": "npm test && npm prune"
+  },
+  "publishConfig": {
+    "registry": "http://registry.npmjs.org"
+  },
+  "author": "Adam Duncan <adam.jd@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "istanbul": "^0.2.7",
+    "jscs": "^1.4.5",
+    "jshint": "^2.5.0",
+    "mocha": "^1.18.2",
+    "sinon": "^1.10.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:microadam/component-loader.git"
+  }
+}

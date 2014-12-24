@@ -67,4 +67,27 @@ describe('component-loader', function () {
     }, /Component with name "componentOne" already loaded/)
   })
 
+  it('should throw error if components are missing', function () {
+
+    function noop() {}
+
+    function componentOne() {
+      return { componentOne: [ 'componentThree', noop ] }
+    }
+    function componentTwo() {
+      return { componentTwo: [ 'componentFour', noop ] }
+    }
+
+    var components = [ componentOne, componentTwo ]
+
+    assert.throws(function () {
+      componentLoader(components
+      , function (loadFn) {
+          return loadFn.bind(null, 'Hello')
+        }
+      , noop
+      )
+    }, /Missing dependencies: componentThree, componentFour/)
+  })
+
 })

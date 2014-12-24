@@ -90,4 +90,30 @@ describe('component-loader', function () {
     }, /Missing dependencies: componentThree, componentFour/)
   })
 
+  it('should throw error if there are circular dependencies', function () {
+
+    function noop() {}
+
+    function componentOne() {
+      return { componentOne: [ 'componentTwo', noop ] }
+    }
+    function componentTwo() {
+      return { componentTwo: [ 'componentOne', 'componentThree', noop ] }
+    }
+    function componentThree() {
+      return { componentThree: [ 'componentTwo', noop ] }
+    }
+
+    var components = [ componentOne, componentTwo, componentThree ]
+
+    assert.throws(function () {
+      componentLoader(components
+      , function (loadFn) {
+          return loadFn.bind(null, 'Hello')
+        }
+      , noop
+      )
+    }, /Circular dependencies: componentTwo and componentOne. componentThree and componentTwo/)
+  })
+
 })

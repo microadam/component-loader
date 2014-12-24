@@ -6,6 +6,7 @@ var async = require('async')
 module.exports = function componentLoader(components, eachFn, callback) {
   var loadedComponents = {}
     , dependencies = []
+    , circularDependencies = []
 
   components.forEach(function (component) {
     var componentDefinition = component()
@@ -30,6 +31,15 @@ module.exports = function componentLoader(components, eachFn, callback) {
     var deps = clone(componentParts)
     deps.pop()
     dependencies = dependencies.concat(deps)
+
+    // identify circular dependencies
+    Object.keys(loadedComponents).forEach(function (name) {
+      var otherDeps = clone(loadedComponents[name])
+      otherDeps.pop()
+      if (otherDeps.indexOf(componentName) > -1 && deps.indexOf(name) > -1) {
+        circularDependencies.push(componentName + ' and ' + name)
+      }
+    })
   })
 
   dependencies = uniq(dependencies)
@@ -37,6 +47,10 @@ module.exports = function componentLoader(components, eachFn, callback) {
 
   if (missingDependencies.length) {
     throw new Error('Missing dependencies: ' + missingDependencies.join(', '))
+  }
+
+  if (circularDependencies.length) {
+    throw new Error('Circular dependencies: ' + circularDependencies.join('. '))
   }
 
   async.auto(loadedComponents, callback)

@@ -13,6 +13,10 @@ module.exports = function componentLoader(components, eachFn, callback) {
       , componentParts = componentDefinition[componentName]
       , initFunc = null
 
+    if (loadedComponents[componentName]) {
+      throw new Error('Component with name "' + componentName + '" already loaded')
+    }
+
     if (typeof componentParts === 'function') {
       componentParts = [ componentParts ]
     }
@@ -21,10 +25,6 @@ module.exports = function componentLoader(components, eachFn, callback) {
     componentParts[funcIndex] = eachFn(initFunc)
 
     componentDefinition[componentName] = componentParts
-    if (loadedComponents[componentName]) {
-      throw new Error('Component with name "' + componentName + '" already loaded')
-    }
-
     loadedComponents[componentName] = componentDefinition[componentName]
 
     var deps = clone(componentParts)

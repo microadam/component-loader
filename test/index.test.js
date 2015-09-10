@@ -2,29 +2,35 @@ var assert = require('assert')
   , sinon = require('sinon')
   , componentLoader = require('../')
 
+function noop () {}
+
 describe('component-loader', function () {
 
   it('should load components in the correct order', function (done) {
 
     var componentOneSpy = sinon.stub()
+      , componentTwoSpy
+      , componentThreeSpy
+      , components
+
     componentOneSpy.callsArg(1)
-    function componentOne() {
+    function componentOne () {
       return { componentOne: [ 'componentThree', componentOneSpy ] }
     }
 
-    var componentTwoSpy = sinon.stub()
+    componentTwoSpy = sinon.stub()
     componentTwoSpy.callsArg(1)
-    function componentTwo() {
+    function componentTwo () {
       return { componentTwo: [ 'componentOne', componentTwoSpy ] }
     }
 
-    var componentThreeSpy = sinon.stub()
+    componentThreeSpy = sinon.stub()
     componentThreeSpy.callsArg(1)
-    function componentThree() {
+    function componentThree () {
       return { componentThree: componentThreeSpy }
     }
 
-    var components = [ componentOne, componentTwo, componentThree ]
+    components = [ componentOne, componentTwo, componentThree ]
 
     componentLoader(components
     , function (loadFn) {
@@ -46,12 +52,10 @@ describe('component-loader', function () {
 
   it('should throw error if component is already loaded', function () {
 
-    function noop() {}
-
-    function componentOne() {
+    function componentOne () {
       return { componentOne: [ 'componentThree', noop ] }
     }
-    function componentTwo() {
+    function componentTwo () {
       return { componentOne: [ 'componentOne', noop ] }
     }
 
@@ -69,12 +73,10 @@ describe('component-loader', function () {
 
   it('should throw error if components are missing', function () {
 
-    function noop() {}
-
-    function componentOne() {
+    function componentOne () {
       return { componentOne: [ 'componentThree', noop ] }
     }
-    function componentTwo() {
+    function componentTwo () {
       return { componentTwo: [ 'componentFour', noop ] }
     }
 
@@ -92,15 +94,13 @@ describe('component-loader', function () {
 
   it('should throw error if there are circular dependencies', function () {
 
-    function noop() {}
-
-    function componentOne() {
+    function componentOne () {
       return { componentOne: [ 'componentTwo', noop ] }
     }
-    function componentTwo() {
+    function componentTwo () {
       return { componentTwo: [ 'componentOne', 'componentThree', noop ] }
     }
-    function componentThree() {
+    function componentThree () {
       return { componentThree: [ 'componentTwo', noop ] }
     }
 

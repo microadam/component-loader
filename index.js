@@ -3,16 +3,19 @@ var async = require('async')
   , uniq = require('lodash.uniq')
   , difference = require('lodash.difference')
 
-module.exports = function componentLoader(components, eachFn, callback) {
+module.exports = function componentLoader (components, eachFn, callback) {
   var loadedComponents = {}
     , dependencies = []
     , circularDependencies = []
+    , missingDependencies
 
   components.forEach(function (component) {
     var componentDefinition = component()
       , componentName = Object.keys(componentDefinition)[0]
       , componentParts = componentDefinition[componentName]
       , initFunc = null
+      , funcIndex
+      , deps
 
     if (loadedComponents[componentName]) {
       throw new Error('Component with name "' + componentName + '" already loaded')
@@ -21,14 +24,14 @@ module.exports = function componentLoader(components, eachFn, callback) {
     if (typeof componentParts === 'function') {
       componentParts = [ componentParts ]
     }
-    var funcIndex = componentParts.length - 1
+    funcIndex = componentParts.length - 1
     initFunc = componentParts[funcIndex]
     componentParts[funcIndex] = eachFn(initFunc)
 
     componentDefinition[componentName] = componentParts
     loadedComponents[componentName] = componentDefinition[componentName]
 
-    var deps = clone(componentParts)
+    deps = clone(componentParts)
     deps.pop()
     dependencies = dependencies.concat(deps)
 
@@ -43,7 +46,7 @@ module.exports = function componentLoader(components, eachFn, callback) {
   })
 
   dependencies = uniq(dependencies)
-  var missingDependencies = difference(dependencies, Object.keys(loadedComponents))
+  missingDependencies = difference(dependencies, Object.keys(loadedComponents))
 
   if (missingDependencies.length) {
     throw new Error('Missing dependencies: ' + missingDependencies.join(', '))

@@ -1,9 +1,9 @@
 {
   "name": "component-loader",
   "description": "Component loader which handles dependency loading",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "dependencies": {
-    "async": "^1.4.2",
+    "async": "^3.2.3",
     "lodash.clone": "^3.0.3",
     "lodash.difference": "^3.2.2",
     "lodash.uniq": "^3.2.2"
